@@ -25,7 +25,7 @@ Status values: `not started` · `in progress` · `gate pending` · `done (gate p
 
 ## 2. Next action
 
-Start **Slice 0 — Walking skeleton**: scaffold `backend/` + `frontend/`, write `docker-compose.yml` + multi-stage `Dockerfile`, full Prisma schema + initial migration, health endpoint, prove `docker compose up --build` from clean checkout. Then QA gate 0.
+Start **Slice 0 — Walking skeleton** with **Task 0.1 — Backend & frontend scaffolding**, as specified in [current-task.md](current-task.md). Slice 0 runs as three tasks (0.1 scaffolding → 0.2 Prisma schema + migration → 0.3 compose stack + harness) ending in QA gate 0. Execute per [agentic-workflow.md](agentic-workflow.md) using the templates in `prompts/`.
 
 ## 3. What exists today
 
@@ -34,9 +34,10 @@ Start **Slice 0 — Walking skeleton**: scaffold `backend/` + `frontend/`, write
 | Requirements | `requirements/*.pdf`, 5 wireframes | authoritative input |
 | Analysis | [requirements-analysis.md](requirements-analysis.md) (Q1–Q44) · [entities.md](entities.md) · [business-rules.md](business-rules.md) (77 BR) · [user-flows.md](user-flows.md) (F1–F9) · [implementation-risks.md](implementation-risks.md) (R1–R15) | complete |
 | QA | [qa/test-strategy.md](qa/test-strategy.md) · [qa/test-checklist.md](qa/test-checklist.md) (81 CHK) · [qa/traceability-matrix.md](qa/traceability-matrix.md) · [qa/qa-review-log.md](qa/qa-review-log.md) (baseline review 2026-07-07) | complete for planning stage |
-| Planning | [architecture.md](architecture.md) · [implementation-plan.md](implementation-plan.md) · this file | created 2026-07-07 |
+| Planning | [architecture.md](architecture.md) · [implementation-plan.md](implementation-plan.md) (task-level breakdown 2026-07-07) · this file | created 2026-07-07 |
+| Process | [agentic-workflow.md](agentic-workflow.md) · [context-management.md](context-management.md) · [current-task.md](current-task.md) (initialized to Task 0.1) · prompt templates in `prompts/` (session-start, plan-next-task, implement-current-task, self-check, qa-review, fix-qa-findings, session-end) | created 2026-07-07 |
 | Code | — | **none** (greenfield) |
-| Tooling | `.claude/agents/qa-reviewer.md` subagent | ready |
+| Tooling | `.claude/agents/qa-reviewer.md` · `.claude/agents/implementation-planner.md` subagents | ready |
 
 ## 4. Decision log
 
@@ -54,6 +55,7 @@ Newest last. Full rationale lives in [architecture.md](architecture.md); this is
 | 2026-07-07 | Plan shape: 8 vertical slices, each with a mandatory `@qa-reviewer` gate before commit; 4 h buffer | [implementation-plan.md](implementation-plan.md) |
 | 2026-07-07 | Q5 security posture: duplicate sign-up returns an explicit 409 — account-enumeration disclosure knowingly accepted for this hackathon tool (distinct from the BR-T07 all-data-visible rule; deliberate, challengeable choice) | [architecture.md](architecture.md) §6 |
 | 2026-07-07 | DB password: `${POSTGRES_PASSWORD:-dev default}` in compose, declared bounded exception to literal BR-A15/DoD-8 wording (see §5) | [architecture.md](architecture.md) §2 |
+| 2026-07-07 | Execution model: slices broken into 30–90 min tasks (33 total); two-level QA gating — task-scoped qa-reviewer review at every task commit, full QA gate at each slice-closing task; docs-only commits exempt; active task tracked in [current-task.md](current-task.md) | [implementation-plan.md](implementation-plan.md) · [agentic-workflow.md](agentic-workflow.md) |
 
 ## 5. Open questions & blockers
 
