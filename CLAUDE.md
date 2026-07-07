@@ -2,16 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project status
+## Sources of truth & workflow
 
-Greenfield. As of this writing the repo contains **only requirements and design inputs** — no application code exists yet:
-
-- `requirements/Hackathon_Ticketing_System_Requirements_v3.pdf` — the authoritative spec (read this before building anything).
+- `requirements/Hackathon_Ticketing_System_Requirements_v3.pdf` — the authoritative spec.
 - `requirements/wireframes/*.png` — 5 low-fidelity wireframes (reference only; layout is not prescriptive as long as all mandatory actions/states remain usable).
-- `docs/`, `prompts/` — currently empty.
-- `.gitignore` is preconfigured for .NET, but **languages and frameworks are unrestricted** — do not read a stack choice into it.
-
-There are no build/lint/test commands yet. Once a stack is chosen, the single hard requirement below governs how the app runs.
+- `docs/` — project knowledge and state (architecture, plans, current task, QA docs). Read files selectively based on the active task; do not load the whole tree every session.
+- Implementation work should normally start through `/task-start` once the Skills migration (see `docs/claude-code-upgrade-plan.md`) is complete.
+- `prompts/` is legacy until migrated into `.claude/skills/` — do not treat it as the active workflow.
 
 ## What to build
 
