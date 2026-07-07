@@ -2,7 +2,7 @@
 
 **Living document — update at every QA gate and whenever a decision changes.** One glance answers: where are we, what's decided, what's next, what's blocked.
 
-Last updated: **2026-07-07** · Phase: **Planning complete — implementation not started**
+Last updated: **2026-07-07** · Phase: **Implementation — Slice 0 in progress (Task 0.1 done, reconciled)**
 
 ---
 
@@ -10,7 +10,7 @@ Last updated: **2026-07-07** · Phase: **Planning complete — implementation no
 
 | Slice ([implementation-plan.md](implementation-plan.md)) | Status | QA gate | Commit |
 |---|---|---|---|
-| 0 — Walking skeleton | not started | — | — |
+| 0 — Walking skeleton | in progress (task 0.1 of 3 done) | — | 510a9fb (task 0.1) |
 | 1 — Auth & email verification | not started | — | — |
 | 2 — Teams | not started | — | — |
 | 3 — Epics | not started | — | — |
@@ -25,7 +25,7 @@ Status values: `not started` · `in progress` · `gate pending` · `done (gate p
 
 ## 2. Next action
 
-Start **Slice 0 — Walking skeleton** with **Task 0.1 — Backend & frontend scaffolding**, as specified in [current-task.md](current-task.md). Slice 0 runs as three tasks (0.1 scaffolding → 0.2 Prisma schema + migration → 0.3 compose stack + harness) ending in QA gate 0. Execute per [agentic-workflow.md](agentic-workflow.md) using the templates in `prompts/`.
+Continue **Slice 0 — Walking skeleton** with **Task 0.2 — Prisma schema + initial migration**, as specified in [current-task.md](current-task.md). Task 0.1 (scaffolding) was committed as `510a9fb` outside the workflow and reconciled 2026-07-07: acceptance criteria verified retroactively (builds, `/api/health`, error contract, 8 route stubs, `.gitignore` pre-existing coverage) and a retroactive task-scoped qa-reviewer review returned **PASS** with two non-blocking watch-items (carried in [current-task.md](current-task.md)). Slice 0 finishes with 0.3 compose stack + harness, ending in QA gate 0. Execute per [agentic-workflow.md](agentic-workflow.md) using the templates in `prompts/`.
 
 ## 3. What exists today
 
