@@ -15,9 +15,9 @@ How Claude Code sessions execute this project. The executable procedures live in
 
 Every unit of work follows the same Skill pipeline. One task ([implementation-plan.md](implementation-plan.md) numbering) per cycle; never two tasks in flight. `/task-start` is the one command a human normally runs — it classifies where the pipeline stands and routes to the right stage.
 
-1. **`/task-start`** — gathers minimal evidence ([current-task.md](current-task.md), [project-state.md](project-state.md) §1–2, git state), classifies the workflow state, enforces human approval gates, and hands off to the stage below.
+1. **`/task-start`** — gathers minimal evidence ([current-task.md](current-task.md), [project-state.md](project-state.md) §1–2, git state), classifies the workflow state, enforces human approval gates, and hands off to the stage below. For a **fresh task** it presents a **Task Start Brief** (goal, scope, criteria, QA gate, risks) and **always stops** for explicit human approval — `/task-start` itself is an orchestration request, not implementation approval.
 2. **`task-plan`** — if [current-task.md](current-task.md) is stale or empty, selects the next task block from the active slice and overwrites [current-task.md](current-task.md) with the task contract. May invoke the `implementation-planner` subagent on plan drift.
-3. **`task-implement`** — executes exactly the scope in [current-task.md](current-task.md). Scope drift = stop, propose an amendment or follow-up task; don't improvise extra scope.
+3. **`task-implement`** — first writes an **Implementation Plan** (expected files, steps, validation commands, stop conditions, risks) and waits for a separate explicit human approval before editing any file; then executes exactly the scope in [current-task.md](current-task.md). After plan approval the pipeline auto-continues through self-check/QA/fix/finish as before. Scope drift = stop, propose an amendment or follow-up task; don't improvise extra scope.
 4. **`task-self-check`** — before any QA involvement: walks the acceptance criteria one by one, runs the smallest relevant test set, spot-checks touched invariants. Fixes self-found issues — qa-reviewer is not a linter.
 5. **`task-qa`** — invokes `@qa-reviewer` per the rules below; its verdict gates the commit (`FAIL`/`BLOCKED` stops the line).
 6. **`task-fix`** (if needed) — addresses Critical/Major findings root-cause-first, re-runs affected tests, re-reviews if behavior changed.
@@ -32,7 +32,7 @@ Session end (any time, even mid-task): `task-finish` also handles parking — a 
 | **Main Claude Code session** | The only writer of application code, tests, config, and migrations. Runs commands, drives the loop, owns commits. | Skip gates; expand scope; mark CHK items passed without evidence. |
 | **`implementation-planner` subagent** | Optional read-only planner: turns the next plan item into a concrete task block (scope, criteria, commands, risks). Useful when the next task is ambiguous or the plan drifted from reality. | Write any file; make scope decisions the plan doesn't already sanction. |
 | **`qa-reviewer` subagent** | Read-only reviewer against requirements/BR/CHK/traceability. Its verdict gates commits: `FAIL`/`BLOCKED` stops the line. | Write production/test code; approve scope creep; substitute for running tests. |
-| **Human reviewer** | Approves plans and architecture changes, resolves open Q-items with the requirements owner, owns descope decisions, reviews commits at their own pace. | — |
+| **Human reviewer** | Approves Task Start Briefs, Implementation Plans, and architecture changes; resolves open Q-items with the requirements owner; owns descope decisions; reviews commits at their own pace. | — |
 
 ## When to invoke qa-reviewer
 

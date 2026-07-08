@@ -50,7 +50,7 @@ Prefer concrete evidence over assumption. If the evidence doesn't clearly suppor
 | State | Next stage |
 |---|---|
 | No current task · Stale task · Finished | `task-plan` |
-| Fresh task (approved — see §5) | `task-implement` |
+| Fresh task | present the **Task Start Brief** (§6), then **stop** for approval (§5); only after explicit approval → `task-implement` |
 | In-flight task | summarize the resume point; ask whether to continue → `task-implement` |
 | Implemented, unchecked | `task-self-check` |
 | Self-check failed | `task-implement` (in-scope work missing/wrong) or `task-fix` (finding-shaped defect) |
@@ -65,7 +65,7 @@ One task in flight at a time — never two.
 
 Require explicit human approval:
 
-- **before implementation starts** — unless current-task.md is fresh, unambiguous, *and* the user explicitly asked to proceed this turn;
+- **before first implementation of a fresh task — always, no exceptions.** `/task-start` is an **orchestration request, not implementation approval**; never infer approval from the `/task-start` invocation itself, from a clean state classification, or from prior sessions. Implementation approval must be a **separate explicit human message** sent *after* the Task Start Brief (§6) is shown. The human has two valid responses: **approve the task as-is** (e.g. "approved", "proceed as-is") → route to `task-implement`; or **correct the task** → apply/propose the correction to `docs/current-task.md` via the normal proposal path (§2), re-present the brief, and wait again;
 - when **current-task.md and project-state.md disagree**;
 - when **scope drift** is detected;
 - before **architecture, requirements, or business-rule changes**;
@@ -73,9 +73,21 @@ Require explicit human approval:
 - before **broad repo reads or broad docs reads**;
 - before **escalating to a higher-cost model**.
 
-### 6. Report
+### 6. Task Start Brief
 
-Every run ends with this block before any hand-off:
+Every run ends with a report before any hand-off. For a **fresh task**, the full **Task Start Brief** is mandatory:
+
+- **Task:** detected task name/number and status
+- **Goal:** one/two-sentence goal of the task
+- **Allowed files/areas:** summary from current-task.md
+- **Forbidden changes:** summary
+- **Acceptance criteria:** summarized list
+- **Commands / QA gate:** commands to run and the QA gate expectation
+- **Risks / ambiguities:** anything detected from the evidence (contradictions, vague criteria, carried-over watch-items)
+- **Selected next stage:** the skill that would run on approval (`task-implement`)
+- **Approval:** explicit statement that the pipeline is **stopped** awaiting a separate human approval message (approve as-is, or correct the task — §5)
+
+For all other states, the shorter report block suffices:
 
 - **Detected state:** …
 - **Evidence used:** …
@@ -86,6 +98,8 @@ Every run ends with this block before any hand-off:
 ### 7. Hand off
 
 Delegate by naming the skill and its input (e.g. "run `task-qa` with the self-check criteria table and test output"). Do not perform the child procedure here. Continue into the next stage automatically **only** when it is safe, unambiguous, and already approved (explicit go-ahead this turn, or a standing approval recorded in the task block); otherwise stop after the §6 report and wait.
+
+**Exception — the fresh-task gate cannot be pre-approved.** Automatic continuation into `task-implement` for a fresh task is **never** allowed: not by a standing approval, not by the `/task-start` invocation, not by momentum from a prior task. After the human's explicit approval message, the rest of the pipeline (`task-implement → task-self-check → task-qa → task-fix` if needed → `task-finish`) auto-chains as before — still subject to `task-implement`'s own implementation-plan approval gate.
 
 ## Stop conditions
 
