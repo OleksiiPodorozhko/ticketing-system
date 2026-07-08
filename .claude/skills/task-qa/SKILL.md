@@ -43,6 +43,8 @@ Instruct it to:
 - review **that delta** against requirements — not the whole project;
 - **Grep each claimed BR/CHK ID and verify the rule's actual text** matches the behavior being claimed — a mis-cited ID is a finding, not a pass.
 
+When the verdict is in, record the review per §5.
+
 ### 4. Full gate (slice-closing task)
 
 Follow the "QA gate protocol" in `docs/implementation-plan.md`, before the slice-closing commit:
@@ -50,9 +52,18 @@ Follow the "QA gate protocol" in `docs/implementation-plan.md`, before the slice
 1. Run the smallest relevant test set for the slice; then the full suite if shared behavior changed.
 2. **Manually run the slice's CHK items from `docs/qa/test-checklist.md` against the compose stack first**, and include the results in the review input.
 3. Invoke `@qa-reviewer` with: the slice goal, changed files (paths), the BR/F/CHK IDs claimed as covered, and the CHK/test results. The same verify-claimed-IDs instruction as §3 applies.
-4. Afterwards: append the verdict to `docs/qa/qa-review-log.md` (append-only) and update `docs/project-state.md` (§1 row, DoD scoreboard, §2 next action).
+4. Afterwards: record the review per §5 and update `docs/project-state.md` (§1 row, DoD scoreboard, §2 next action).
 
-### 5. Route the verdict
+### 5. Record the review
+
+For **every completed qa-reviewer review** (task-scoped and full gate alike):
+
+1. Write the **full report** — verdict, scope reviewed, findings, decisions, open items — to a new file `docs/qa/reviews/YYYY-MM-DD-task-<N>-<slug>.md` (non-task reviews: `YYYY-MM-DD-<topic>.md`), starting with the banner:
+   `> **Historical archive. Not part of normal runtime context unless explicitly requested.**`
+   One file per review, immutable once written — a correction gets a new file and a new index row referencing the old one.
+2. Append **one index row** to `docs/qa/qa-review-log.md`: date · task/scope · verdict · review-file link · open follow-ups (concise IDs/phrases). **Never append the full report to the log** — it is a lightweight navigation index only (`docs/context-management.md` §7).
+
+### 6. Route the verdict
 
 Report the verdict to the human, then:
 
@@ -65,4 +76,4 @@ Severity convention (docs/qa/test-strategy.md): **Critical** = a DoD item fails 
 
 ## Out of scope for this skill
 
-Fixing findings (`task-fix`), documentation updates beyond the full-gate log/state entries in §4, next-task preparation, and the commit itself (`task-finish`). qa-reviewer writes no production or test code — fixes are the main session's job.
+Fixing findings (`task-fix`), documentation updates beyond the review record (§5) and the full-gate state entries (§4), next-task preparation, and the commit itself (`task-finish`). qa-reviewer writes no production or test code — fixes are the main session's job.

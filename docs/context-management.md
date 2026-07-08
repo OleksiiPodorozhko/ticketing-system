@@ -20,9 +20,10 @@ Performed by `task-start` when a session begins. The principle: minimal context 
 - [architecture.md](architecture.md) — only when the task touches a stack/topology/API-contract decision or a Q-item resolution (§6).
 - `docs/business-rules.md`, `docs/user-flows.md`, `docs/qa/test-checklist.md` — **by ID**: Grep for the BR/F/CHK IDs the task cites; don't read whole files.
 - `requirements/*.pdf` — only when a derived doc is suspected wrong; docs are the working truth, the PDF is the arbiter.
+- A specific **historical archive** file (`docs/tasks/`, `docs/qa/reviews/`, `docs/qa/runs/`) — only under the read conditions in §7 (explicit human request, or a specific referenced review/run/task).
 - Source code — only files inside the task's allowed scope, plus their direct call sites when changing shared behavior.
 
-**Never at session start:** the whole `docs/` tree, the whole `docs/qa/` tree, `docs/tasks/` (historical task archives — intentionally excluded from normal runtime context; read only on an explicit human request for historical investigation), or a full-repo scan "to get oriented". [current-task.md](current-task.md) exists precisely so orientation costs two files.
+**Never at session start:** the whole `docs/` tree, the whole `docs/qa/` tree, the historical archives (`docs/tasks/`, `docs/qa/reviews/`, `docs/qa/runs/` — intentionally excluded from normal runtime context; see §7), or a full-repo scan "to get oriented". [current-task.md](current-task.md) exists precisely so orientation costs two files.
 
 ## 2. What to update at session end
 
@@ -30,8 +31,8 @@ Performed by `task-finish` at close-out or when parking work.
 
 - **[current-task.md](current-task.md)** — always. Either: (a) task completed → overwrite with the next task's block, or (b) task in flight → append a short "Progress / resume here" note (what's done, what's left, any surprise found). Never leave it describing finished work with no pointer forward.
 - **[project-state.md](project-state.md)** — only when something changed at its altitude: a QA gate passed (§1 row + DoD scoreboard + §2 next action), a decision was made (§4), a blocker appeared/cleared (§5). Not for intra-task progress.
-- **[qa/qa-review-log.md](qa/qa-review-log.md)** — append-only, at full QA gates and behavior-affecting reviews. Written per the gate protocol, not as a session ritual.
-- **`docs/tasks/task-<N>-<slug>.md`** — only when a completed task is being committed: the task archive (approved Task Start Brief and Implementation Plan, what was implemented, changed files, test/QA evidence, final summary, follow-ups), written *before* the commit so it lands in it; commit hash "pending" in the file, printed in the close-out summary. Historical reference only — excluded from normal runtime context; supplements, never replaces, the three documents above.
+- **QA review record** — for every completed `qa-reviewer` review (task-scoped or full gate): the **full report** goes to a new file in `docs/qa/reviews/` (historical archive, immutable), and **one index row** is appended to [qa/qa-review-log.md](qa/qa-review-log.md) (date · task/scope · verdict · review file · open follow-ups). The log stays a lightweight navigation index — never paste a full report into it. Written by `task-qa` at review time; `task-finish` verifies.
+- **`docs/tasks/task-<N>-<slug>.md`** — only when a completed task is being committed: the task archive (approved Task Start Brief and Implementation Plan, what was implemented, changed files, test/QA evidence summary, final summary, follow-ups; the QA result as verdict + **link to the `docs/qa/reviews/` file**, not a copy of the report), written *before* the commit so it lands in it; commit hash "pending" in the file, printed in the close-out summary. Historical reference only — excluded from normal runtime context; supplements, never replaces, the three documents above.
 - **Commit or explicitly park.** Committed work per [agentic-workflow.md](agentic-workflow.md); uncommitted work-in-progress is acceptable only if current-task.md's resume note says exactly where it stands.
 
 ## 3. When to update CLAUDE.md — and when not
@@ -82,8 +83,42 @@ Human reference — this is what `task-finish` does:
 [ ] QA review done if this session commits implementation work (see agentic-workflow.md).
 [ ] docs/current-task.md: overwritten for next task OR resume note appended.
 [ ] docs/project-state.md updated IF a gate passed / decision made / blocker changed.
-[ ] docs/qa/qa-review-log.md appended IF a full gate ran.
+[ ] docs/qa/reviews/ report written + qa-review-log.md index row appended IF a qa-reviewer review ran.
 [ ] docs/tasks/ archive written IF a completed task is being committed (before the commit).
 [ ] Commit made (with task number) or work explicitly parked in the resume note.
 [ ] No stray files: scratch/temp output not left in the repo.
 ```
+
+## 7. Document context categories
+
+Every project document belongs to exactly one category, and the category dictates when Claude Code may read it. This is what keeps runtime context small and scalable even after dozens of completed tasks: active state stays small, reference docs are read selectively, history stays durable but out of the way.
+
+### Runtime state
+
+Small files that may be read during normal orchestration. They must **stay small** — anything with unbounded growth gets split out (see Historical archives).
+
+- [current-task.md](current-task.md) — overwritten per task.
+- [project-state.md](project-state.md) — slice-level snapshot; §4 decision log grows slowly (one row per decision) — monitor, archive old rows if it ever exceeds ~40.
+- [qa/qa-review-log.md](qa/qa-review-log.md) — **lightweight navigation index only**: one row per QA review (date, task, verdict, review file, open follow-ups). Full reports never live here.
+
+### Reference docs
+
+Stable project knowledge. Read **selectively** — by section, by task ID, or by BR/F/CHK/DoD ID (Grep for the ID, read the surrounding lines). Never read a whole large reference document unless targeted lookup genuinely can't answer the question.
+
+- [implementation-plan.md](implementation-plan.md) (active slice's section only) · [architecture.md](architecture.md) · [business-rules.md](business-rules.md) · [user-flows.md](user-flows.md) · [entities.md](entities.md) · [requirements-analysis.md](requirements-analysis.md) · [implementation-risks.md](implementation-risks.md)
+- [qa/test-strategy.md](qa/test-strategy.md) · [qa/test-checklist.md](qa/test-checklist.md) · [qa/traceability-matrix.md](qa/traceability-matrix.md)
+- `requirements/` (the PDF is the arbiter when a derived doc is suspected wrong)
+
+### Historical archives
+
+Durable history — **not part of normal runtime context**. No normal run of `task-start`, `task-plan`, `task-implement`, `task-self-check`, or `task-qa` reads these. Files here are immutable once written; corrections get a new file.
+
+- `docs/tasks/` — per-task close-out archives (written by `task-finish`).
+- `docs/qa/reviews/` — one file per completed QA review, the full reports (written by `task-qa`); navigated via the [qa/qa-review-log.md](qa/qa-review-log.md) index.
+- `docs/qa/runs/` — dated manual checklist runs.
+
+Read a historical file **only** when: the human explicitly asks for historical investigation; a specific task/review/run is referenced (e.g. by an index row or a carried follow-up); or the task requires comparing against a specific previous implementation. Even then, open the specific file — never sweep the directory.
+
+### Generated / local / temporary artifacts
+
+Not durable project memory; generally not committed. `.env*` files, local logs, Claude telemetry logs, scratch files, temporary outputs. These are gitignored or cleaned up (`task-finish`'s git-status sweep) unless one demonstrably has long-term engineering value — in which case it gets promoted into one of the categories above, deliberately.

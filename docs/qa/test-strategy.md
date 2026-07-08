@@ -2,7 +2,7 @@
 
 **Scope of this document:** how the mandatory MVP of the ticketing system is tested. Sources: `requirements/Hackathon_Ticketing_System_Requirements_v3.pdf` (§ references), [requirements-analysis.md](../requirements-analysis.md), [business-rules.md](../business-rules.md) (BR-…), [user-flows.md](../user-flows.md) (F1–F9), [implementation-risks.md](../implementation-risks.md) (R1–R15). Acceptance criteria are DoD-1…DoD-10; open questions are Q1–Q44.
 
-Companion documents: [test-checklist.md](test-checklist.md) (the run-sheet) · [traceability-matrix.md](traceability-matrix.md) (coverage) · [qa-review-log.md](qa-review-log.md) (review history).
+Companion documents: [test-checklist.md](test-checklist.md) (the run-sheet) · [traceability-matrix.md](traceability-matrix.md) (coverage) · [qa-review-log.md](qa-review-log.md) (review index; full reports in `reviews/`).
 
 ---
 
@@ -59,13 +59,13 @@ Priorities below drive checklist ordering and how testing time is spent. Derived
 
 **Exit:**
 - All P0 checklist items pass.
-- All P1 items pass, or each failure has a logged defect with severity and a decision recorded in [qa-review-log.md](qa-review-log.md).
+- All P1 items pass, or each failure has a logged defect with severity and a decision recorded in the QA review record (full report in `reviews/`, indexed in [qa-review-log.md](qa-review-log.md)).
 - P2 items executed; failures logged.
 - No open **Critical/Major** defects against any DoD item.
 
 **Severity convention:** *Critical* = a DoD item fails or data is lost/corrupted · *Major* = a BR-rule violation with no workaround · *Minor* = BR-rule violation with workaround, or degraded UX · *Cosmetic* = presentation only (wireframes are non-binding, §15).
 
-**Recording results:** copy [test-checklist.md](test-checklist.md) per run (e.g. `docs/qa/runs/2026-07-07-run1.md`) and fill the Result column there; the master checklist stays result-empty. Summarize each cycle in [qa-review-log.md](qa-review-log.md).
+**Recording results:** copy [test-checklist.md](test-checklist.md) per run (e.g. `docs/qa/runs/2026-07-07-run1.md`) and fill the Result column there; the master checklist stays result-empty. Record each cycle as a full report in `docs/qa/reviews/` with one index row in [qa-review-log.md](qa-review-log.md).
 
 ## 6. Open questions that block test design
 
@@ -85,4 +85,4 @@ These Q-items (from [requirements-analysis.md](../requirements-analysis.md#8-con
 
 ## 7. Regression policy
 
-After any implementation change: re-run the checklist section(s) whose BR-refs the change touches, plus the P0 startup/fresh-DB checks if compose files, migrations, or configuration changed. The [traceability-matrix.md](traceability-matrix.md) maps rules → checks for exactly this purpose. Per CLAUDE.md, `@qa-reviewer` reviews precede every commit; those reviews are logged in [qa-review-log.md](qa-review-log.md).
+After any implementation change: re-run the checklist section(s) whose BR-refs the change touches, plus the P0 startup/fresh-DB checks if compose files, migrations, or configuration changed. The [traceability-matrix.md](traceability-matrix.md) maps rules → checks for exactly this purpose. Per CLAUDE.md, `@qa-reviewer` reviews precede every commit; those reviews are recorded in `docs/qa/reviews/` and indexed in [qa-review-log.md](qa-review-log.md).

@@ -2,7 +2,7 @@
 
 Manual run-sheet for the mandatory MVP. Refs point to [business-rules.md](../business-rules.md) (BR), [user-flows.md](../user-flows.md) (F), DoD items, and open questions (Q) in [requirements-analysis.md](../requirements-analysis.md). Priorities per [test-strategy.md](test-strategy.md) §3.
 
-**How to use:** this master stays result-empty. For each test cycle, copy this file to `docs/qa/runs/<date>-run<n>.md`, fill **Result** (`Pass` / `Fail` / `Blocked` / `N/A`) and **Notes** (defect refs, observed behavior for `[blocked: Qnn]` items), and summarize the cycle in [qa-review-log.md](qa-review-log.md). Items tagged `[blocked: Qnn]` have a provisional expectation — record actual behavior rather than failing them, unless they violate a hard BR rule.
+**How to use:** this master stays result-empty. For each test cycle, copy this file to `docs/qa/runs/<date>-run<n>.md`, fill **Result** (`Pass` / `Fail` / `Blocked` / `N/A`) and **Notes** (defect refs, observed behavior for `[blocked: Qnn]` items), and record the cycle in `docs/qa/reviews/` (one index row in [qa-review-log.md](qa-review-log.md)). Items tagged `[blocked: Qnn]` have a provisional expectation — record actual behavior rather than failing them, unless they violate a hard BR rule.
 
 **Conventions:** "API-level" = exercise with an HTTP client, not the UI, because client-side validation alone is insufficient (BR-K05). Fresh-DB items require `docker compose down -v` first.
 

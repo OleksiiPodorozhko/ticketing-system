@@ -1,6 +1,6 @@
 ---
 name: task-finish
-description: Close out a ticketing-system task or session after implementation, self-check, QA, and fixes are complete — verify the gates ran, update current-task.md / project-state.md / qa-review-log.md per their rules, write the task archive to docs/tasks/ for completed tasks, sweep git status, then commit with the task number or explicitly park the work. The only pipeline skill that commits; never pushes unless asked.
+description: Close out a ticketing-system task or session after implementation, self-check, QA, and fixes are complete — verify the gates ran, update current-task.md / project-state.md per their rules, verify the QA review record (docs/qa/reviews/ file + qa-review-log.md index row), write the task archive to docs/tasks/ for completed tasks, sweep git status, then commit with the task number or explicitly park the work. The only pipeline skill that commits; never pushes unless asked.
 ---
 
 # task-finish
@@ -35,9 +35,9 @@ Update only if something changed at slice level:
 
 Do not add intra-task progress noise — that belongs in the current-task resume note.
 
-### 4. Append `docs/qa/qa-review-log.md` — only for full QA gates
+### 4. Verify the QA review record — for any qa-reviewer review this session
 
-Append-only, and only if a **full QA gate** ran this session. If `task-qa` already wrote the entry during the gate, verify it is there — do not duplicate it.
+If a qa-reviewer review ran this session, `task-qa` §5 already wrote the **full report** to `docs/qa/reviews/<date>-task-<N>-<slug>.md` and appended **one index row** to `docs/qa/qa-review-log.md`. Verify both exist; write them now if missing — never duplicate them. **Never append a full QA report to the log** (it is a lightweight navigation index only) and never copy the report into any other document — link the review file instead.
 
 (CLAUDE.md itself changes only for new non-negotiable constraints, changed build/test/run commands, or a wrong instruction — per `docs/context-management.md` §3 — and any such edit is flagged in the commit message.)
 
@@ -47,10 +47,10 @@ When a **completed task** is about to be committed, create its archive **before 
 
 - **File:** `docs/tasks/task-<N>-<kebab-case-slug>.md` (e.g. `docs/tasks/task-0.3-compose-stack-test-harness-clean-checkout-proof.md`).
 - **Top banner:** `> **Historical archive. Not part of normal runtime context unless explicitly requested.**`
-- **Sections:** task title/ID and slice · branch · status · **Commits: pending** at archive time · **Task Start Brief as approved** · **Implementation Plan as approved** (including any approved scope deviations) · what was implemented · changed-files summary · validation/test evidence summary · QA result/summary if a review ran (verdict, findings, resolution) · final task summary · decisions · risks / follow-ups carried forward.
+- **Sections:** task title/ID and slice · branch · status · **Commits: pending** at archive time · **Task Start Brief as approved** · **Implementation Plan as approved** (including any approved scope deviations) · what was implemented · changed-files summary · validation/test evidence summary · QA result if a review ran (verdict + one-line summary + **link to the `docs/qa/reviews/` file** — do not copy the full report) · final task summary · decisions · risks / follow-ups carried forward.
 - **Commit hash:** unknown before the commit — write "pending", commit the archive, then **print the actual hash in the step-8 summary**. Backfill the hash into the archive only if a later commit is happening anyway; **never create a hash-only second commit** (the hash stays recoverable via `git log --grep "<task number>"`).
-- **Source material:** this session's context — the approved Brief and Plan, self-check and QA output. If the task spanned sessions and the verbatim approved text is no longer in context, reconstruct from `docs/current-task.md`, the resume notes, `project-state.md` §4, and `docs/qa/qa-review-log.md`, and mark those sections "(reconstructed — approved text not in session context)".
-- **Boundaries:** the archive is write-only history. It supplements — never replaces — `current-task.md`, `project-state.md`, and `qa-review-log.md`. No pipeline stage reads `docs/tasks/` unless the human explicitly asks for historical investigation.
+- **Source material:** this session's context — the approved Brief and Plan, self-check and QA output. If the task spanned sessions and the verbatim approved text is no longer in context, reconstruct from `docs/current-task.md`, the resume notes, `project-state.md` §4, and the task's `docs/qa/reviews/` file (located via the `qa-review-log.md` index), and mark those sections "(reconstructed — approved text not in session context)".
+- **Boundaries:** the archive is write-only history. It supplements — never replaces — `current-task.md`, `project-state.md`, and `qa-review-log.md`. No pipeline stage reads the historical archives (`docs/tasks/`, `docs/qa/reviews/`, `docs/qa/runs/`) unless the human explicitly asks for historical investigation or a specific file is referenced (`docs/context-management.md` §7).
 
 ### 6. Sweep git status
 

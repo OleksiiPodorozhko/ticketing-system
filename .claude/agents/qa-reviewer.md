@@ -47,7 +47,10 @@ The repository is structured around these source documents:
 * `docs/qa/test-strategy.md` — QA strategy, test levels, priorities, environments, entry/exit criteria, and blocked testing decisions.
 * `docs/qa/test-checklist.md` — practical manual/exploratory checklist using CHK-* IDs.
 * `docs/qa/traceability-matrix.md` — mapping between DoD, BR rules, flows, checklist items, risks, and future automated tests.
-* `docs/qa/qa-review-log.md` — append-only record of QA reviews, findings, decisions, and open items.
+* `docs/qa/qa-review-log.md` — **lightweight navigation index** of QA reviews: one row per review (date, task/scope, verdict, review file, open follow-ups). Full reports never live here.
+* `docs/qa/reviews/` — historical archive: one file per completed QA review (the full reports). Not normal review context.
+* `docs/qa/runs/` — historical archive: dated manual checklist runs. Not normal review context.
+* `docs/tasks/` — historical archive: per-task close-out records. Not normal review context.
 * `README.md` — setup and project usage instructions.
 * `prompts/` — reusable prompts and development notes.
 
@@ -101,7 +104,8 @@ Even then, you may only update:
 * `docs/qa/test-strategy.md`
 * `docs/qa/test-checklist.md`
 * `docs/qa/traceability-matrix.md`
-* `docs/qa/qa-review-log.md`
+* `docs/qa/qa-review-log.md` (index rows only — never full reports)
+* `docs/qa/reviews/` (new review files only — existing files are immutable)
 * files under `prompts/` that are clearly QA prompts
 
 Do not modify production code, test code, migrations, package files, Docker files, application configuration, dependency files, or environment files.
@@ -138,6 +142,16 @@ Use `git diff --stat`, `git diff --name-only`, and focused `git diff` to underst
 
 Do not read the whole repository unless necessary.
 
+## Retrieval discipline
+
+Historical archives (`docs/qa/reviews/`, `docs/qa/runs/`, `docs/tasks/`) are durable history, not review input.
+
+* Never read the complete QA history.
+* Never read every file in `docs/qa/reviews/`.
+* Read `docs/qa/qa-review-log.md` (the lightweight index) only when you actually need it — e.g. to locate carried follow-ups or a prior verdict for the task under review.
+* Open a specific historical review, run, or task-archive file only when it is explicitly relevant: the review input or the human references it, a carried follow-up points to it, or the review requires comparing against that specific prior review or implementation.
+* For large reference docs (`business-rules.md`, `user-flows.md`, `test-checklist.md`, `traceability-matrix.md`, `requirements-analysis.md`), `Grep` for the cited BR / F / CHK / DoD IDs and read the surrounding lines — do not read whole documents when targeted lookup is enough.
+
 ## Review method
 
 For each review:
@@ -151,7 +165,7 @@ For each review:
 7. Check whether tests cover at least the critical success path and one meaningful negative or edge case.
 8. Check whether checklist coverage exists for the affected behavior.
 9. Check whether traceability matrix mappings need updates.
-10. Check whether QA review log should receive a new entry.
+10. Check whether the QA review record should be created (full report file in `docs/qa/reviews/` + one index row in `docs/qa/qa-review-log.md`).
 11. Check whether Docker/startup/test commands remain compatible with clean checkout expectations.
 12. Return a concise verdict with actionable findings.
 
@@ -167,7 +181,7 @@ When reviewing `docs/qa/*`, verify that:
 * Blocked checks clearly identify the blocking open question.
 * `traceability-matrix.md` maps DoD → BR → F → CHK → risks → automated-test placeholder where relevant.
 * No BR rule or mandatory DoD item is left uncovered unless explicitly marked as not directly testable.
-* `qa-review-log.md` remains append-only.
+* `qa-review-log.md` remains a lightweight index only — one row per review linking a full report in `docs/qa/reviews/`; no full reports inline; existing rows and existing review files are never rewritten (corrections get a new row and a new file).
 * QA documents do not rewrite or weaken requirements.
 * QA documents do not expand scope beyond MVP mandatory requirements.
 
@@ -280,7 +294,7 @@ List maintainability, testability, documentation, traceability, or UX concerns.
 List likely regressions and why.
 
 ## Traceability updates needed
-State whether `docs/qa/traceability-matrix.md`, `docs/qa/test-checklist.md`, `docs/qa/qa-review-log.md`, or requirements docs should be updated.
+State whether `docs/qa/traceability-matrix.md`, `docs/qa/test-checklist.md`, the QA review record (`docs/qa/reviews/` file + `docs/qa/qa-review-log.md` index row), or requirements docs should be updated.
 
 ## QA documentation updates needed
 State whether QA docs are current, incomplete, inconsistent, or blocked by open questions.

@@ -54,6 +54,9 @@ pnpm-debug.log*
 .claude/telemetry_tool/.env.local
 .claude/**/*.log
 
+# Machine-local Claude Code permission config — never commit
+.claude/**/settings.local.json
+
 # ==========================================================
 # Docker / Local database data
 # ==========================================================

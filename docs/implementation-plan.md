@@ -15,7 +15,7 @@ Each slice is broken into numbered tasks (**0.1, 0.2, …**) sized for one focus
 - **Risk-based QA**:
   - **Self-check before every task commit** — the implementation agent must check the task acceptance criteria, changed files, and relevant test output before committing.
   - **Task-scoped `@qa-reviewer` review only for high-risk changes** — authentication, authorization, email verification, database schema/migrations, Docker Compose, persistence rules, delete restrictions, ticket state transitions, comments, or requirement/QA documentation changes.
-  - **Full QA gate** — the last task of each slice always ends in the full QA gate below: checklist items + `@qa-reviewer` + `docs/qa/qa-review-log.md` entry + `docs/project-state.md` update.
+  - **Full QA gate** — the last task of each slice always ends in the full QA gate below: checklist items + `@qa-reviewer` + review record (full report in `docs/qa/reviews/`, index row in `docs/qa/qa-review-log.md`) + `docs/project-state.md` update.
   - **Trivial docs-only commits** do not require `@qa-reviewer`.
 - Every task block states: **Goal · Allowed scope · Files/areas · Acceptance criteria · Test/check · QA review**. Estimates are indicative; slice budgets are the binding constraint.
 
@@ -26,7 +26,7 @@ Per CLAUDE.md, at the end of each slice, **before the slice-closing commit**:
 1. Run the smallest relevant test set for the slice; then the full suite if shared behavior changed.
 2. Manually run the slice's CHK items from [qa/test-checklist.md](qa/test-checklist.md) against the compose stack.
 3. **Invoke `@qa-reviewer`** with: the slice goal, changed files, and the BR/F/CHK IDs claimed as covered.
-4. Address Critical/Major findings before committing; log the review in [qa/qa-review-log.md](qa/qa-review-log.md); update [project-state.md](project-state.md).
+4. Address Critical/Major findings before committing; record the review (full report in `qa/reviews/`, index row in [qa/qa-review-log.md](qa/qa-review-log.md)); update [project-state.md](project-state.md).
 5. Commit only with test command output in hand — no completion claims without it.
 
 Verdict `FAIL` or `BLOCKED` from qa-reviewer stops the line: fix or descope before moving on.
