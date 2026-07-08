@@ -21,7 +21,7 @@ Every unit of work follows the same Skill pipeline. One task ([implementation-pl
 4. **`task-self-check`** — before any QA involvement: walks the acceptance criteria one by one, runs the smallest relevant test set, spot-checks touched invariants. Fixes self-found issues — qa-reviewer is not a linter.
 5. **`task-qa`** — invokes `@qa-reviewer` per the rules below; its verdict gates the commit (`FAIL`/`BLOCKED` stops the line).
 6. **`task-fix`** (if needed) — addresses Critical/Major findings root-cause-first, re-runs affected tests, re-reviews if behavior changed.
-7. **`task-finish`** — updates [current-task.md](current-task.md) for the next task, [project-state.md](project-state.md) at gates/decisions, [qa/qa-review-log.md](qa/qa-review-log.md) at full gates; then commits with the task number (the only skill that commits) — and the cycle restarts at `/task-start` for the next task.
+7. **`task-finish`** — updates [current-task.md](current-task.md) for the next task, [project-state.md](project-state.md) at gates/decisions, [qa/qa-review-log.md](qa/qa-review-log.md) at full gates; for a completed task, writes the **task archive** to `docs/tasks/` *before* the final commit (so the archive lands in that commit) — the approved Task Start Brief and Implementation Plan, what was implemented, test/QA evidence, and follow-ups; the commit hash is printed in the close-out summary. Then commits with the task number (the only skill that commits) — and the cycle restarts at `/task-start` for the next task.
 
 Session end (any time, even mid-task): `task-finish` also handles parking — a "Progress / resume here" note in [current-task.md](current-task.md) so the next session can resume cold.
 
@@ -71,4 +71,5 @@ The failure mode to avoid is re-reading the whole docs tree every session. Rules
 - **Don't re-read what's in context.** Files already read this session don't need re-reading after your own edits.
 - **Scope subagent prompts.** Give qa-reviewer/implementation-planner the task block and file *paths* — they have Read/Grep; never paste file bodies into their prompts.
 - **Don't re-derive.** Stack, topology, and Q-decisions are settled in [architecture.md](architecture.md) §1–§6. If tempted to reconsider one, that's a decision-log conversation with the human, not a research session.
+- **`docs/tasks/` is write-only history.** Detailed per-task memory (approved brief/plan, evidence, QA outcome, commit) written by `task-finish` at completion. It is intentionally excluded from normal runtime context to avoid context bloat — no pipeline stage reads it unless the human explicitly asks for historical investigation. It never replaces [current-task.md](current-task.md), [project-state.md](project-state.md), or [qa/qa-review-log.md](qa/qa-review-log.md), which remain the active lightweight state documents.
 - **Prefer targeted test runs.** Smallest relevant test file first; the full suite only when shared behavior changed or at gates.

@@ -24,6 +24,7 @@ Read `docs/current-task.md` (skip the re-read if it is already in context this s
 - Grep for the **BR / F / CHK / R IDs** the task cites and read the surrounding lines — never whole rule, flow, or checklist files.
 - Read `docs/architecture.md` only for the sections the task block references.
 - Read source files only inside the allowed scope, plus their **direct call sites** when changing shared behavior.
+- Never read `docs/tasks/*` (historical task archives) as implementation context — they are excluded from normal runtime context unless the human explicitly asks for historical investigation.
 - Do not re-read files already in context; do not re-derive settled stack/topology decisions.
 
 ### 3. Implementation Plan — before any file edit

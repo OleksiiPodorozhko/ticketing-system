@@ -19,7 +19,7 @@ Collect exactly this evidence, nothing more:
 4. Explicit user instruction in the current turn, if any.
 5. Self-check / QA summaries already visible in this session's context, if any.
 
-`CLAUDE.md` is auto-loaded; do not re-read it. Do **not** read the rest of `docs/` or scan the repo "to get oriented". Pull additional docs only **by ID/section** (Grep) when classification genuinely requires it — a broad docs/repo read is itself an approval gate (§5).
+`CLAUDE.md` is auto-loaded; do not re-read it. Do **not** read the rest of `docs/` or scan the repo "to get oriented". `docs/tasks/` in particular is historical task archive, intentionally excluded from normal runtime context — never read it during orientation or routing unless the human explicitly asks for historical investigation. Pull additional docs only **by ID/section** (Grep) when classification genuinely requires it — a broad docs/repo read is itself an approval gate (§5).
 
 ### 2. Reconcile task vs project state
 

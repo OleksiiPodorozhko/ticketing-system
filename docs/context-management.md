@@ -22,7 +22,7 @@ Performed by `task-start` when a session begins. The principle: minimal context 
 - `requirements/*.pdf` — only when a derived doc is suspected wrong; docs are the working truth, the PDF is the arbiter.
 - Source code — only files inside the task's allowed scope, plus their direct call sites when changing shared behavior.
 
-**Never at session start:** the whole `docs/` tree, the whole `docs/qa/` tree, or a full-repo scan "to get oriented". [current-task.md](current-task.md) exists precisely so orientation costs two files.
+**Never at session start:** the whole `docs/` tree, the whole `docs/qa/` tree, `docs/tasks/` (historical task archives — intentionally excluded from normal runtime context; read only on an explicit human request for historical investigation), or a full-repo scan "to get oriented". [current-task.md](current-task.md) exists precisely so orientation costs two files.
 
 ## 2. What to update at session end
 
@@ -31,6 +31,7 @@ Performed by `task-finish` at close-out or when parking work.
 - **[current-task.md](current-task.md)** — always. Either: (a) task completed → overwrite with the next task's block, or (b) task in flight → append a short "Progress / resume here" note (what's done, what's left, any surprise found). Never leave it describing finished work with no pointer forward.
 - **[project-state.md](project-state.md)** — only when something changed at its altitude: a QA gate passed (§1 row + DoD scoreboard + §2 next action), a decision was made (§4), a blocker appeared/cleared (§5). Not for intra-task progress.
 - **[qa/qa-review-log.md](qa/qa-review-log.md)** — append-only, at full QA gates and behavior-affecting reviews. Written per the gate protocol, not as a session ritual.
+- **`docs/tasks/task-<N>-<slug>.md`** — only when a completed task is being committed: the task archive (approved Task Start Brief and Implementation Plan, what was implemented, changed files, test/QA evidence, final summary, follow-ups), written *before* the commit so it lands in it; commit hash "pending" in the file, printed in the close-out summary. Historical reference only — excluded from normal runtime context; supplements, never replaces, the three documents above.
 - **Commit or explicitly park.** Committed work per [agentic-workflow.md](agentic-workflow.md); uncommitted work-in-progress is acceptable only if current-task.md's resume note says exactly where it stands.
 
 ## 3. When to update CLAUDE.md — and when not
@@ -82,6 +83,7 @@ Human reference — this is what `task-finish` does:
 [ ] docs/current-task.md: overwritten for next task OR resume note appended.
 [ ] docs/project-state.md updated IF a gate passed / decision made / blocker changed.
 [ ] docs/qa/qa-review-log.md appended IF a full gate ran.
+[ ] docs/tasks/ archive written IF a completed task is being committed (before the commit).
 [ ] Commit made (with task number) or work explicitly parked in the resume note.
 [ ] No stray files: scratch/temp output not left in the repo.
 ```
