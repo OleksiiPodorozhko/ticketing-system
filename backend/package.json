@@ -12,10 +12,12 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "fastify": "^5.4.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",
+    "prisma": "^6.19.3",
     "tsx": "^4.19.0",
     "typescript": "^5.8.0"
   }

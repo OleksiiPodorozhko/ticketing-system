@@ -1,0 +1,128 @@
+// Physical data model — docs/architecture.md §4, docs/entities.md.
+// No generator block yet: the app must not wire a Prisma client until a later
+// task (docs/current-task.md, Task 0.2 forbidden changes); `prisma validate`
+// and `prisma migrate` need only the datasource.
+//
+// NOTE: `modified_at` columns intentionally have no @updatedAt — BR-K11/K12
+// require the server to advance them only on an actual field diff, never via
+// ORM auto-touch (architecture.md §4). The @default(now()) applies at INSERT only.
+//
+// Raw-SQL additions live in the migration (Prisma cannot express them):
+//   - CHECK constraints on tickets.type / tickets.state (BR-K02/K03)
+//   - unique index on lower(trim(teams.name)) (BR-T05, R6)
+//   - normalization backstop CHECK on users.email (BR-A02, R6)
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Users & verification (BR-A02, BR-A07/A08/A11) ─────────────────────────
+
+model User {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // Stored trimmed + lowercased; normalization happens at the API boundary,
+  // so a plain unique index on the stored value is case-insensitive in effect.
+  email           String    @unique
+  passwordHash    String    @map("password_hash")
+  emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamptz(6)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  verificationTokens EmailVerificationToken[]
+  createdTickets     Ticket[]
+  comments           Comment[]
+
+  @@map("users")
+}
+
+model EmailVerificationToken {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  // Random 256-bit value stored hashed (architecture.md §4); unique for lookup.
+  tokenHash  String    @unique @map("token_hash")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(6)
+  consumedAt DateTime? @map("consumed_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+// ─── Teams (BR-T05/T06) ─────────────────────────────────────────────────────
+
+model Team {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // Stored as entered; case-insensitive uniqueness via raw-SQL index on
+  // lower(trim(name)) in the initial migration.
+  name       String
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  modifiedAt DateTime @default(now()) @map("modified_at") @db.Timestamptz(6)
+
+  epics   Epic[]
+  tickets Ticket[]
+
+  @@map("teams")
+}
+
+// ─── Epics (BR-E06) ─────────────────────────────────────────────────────────
+
+model Epic {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teamId      String   @map("team_id") @db.Uuid
+  title       String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  modifiedAt  DateTime @default(now()) @map("modified_at") @db.Timestamptz(6)
+
+  team    Team     @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  tickets Ticket[]
+
+  @@index([teamId])
+  @@map("epics")
+}
+
+// ─── Tickets (BR-K02/K03, BR-T06, BR-E06) ───────────────────────────────────
+
+model Ticket {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teamId      String   @map("team_id") @db.Uuid
+  epicId      String?  @map("epic_id") @db.Uuid
+  // text + CHECK constraint (raw SQL in migration), not a native enum —
+  // canonical strings per BR-K02/K03.
+  type        String
+  state       String
+  title       String
+  body        String
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  modifiedAt  DateTime @default(now()) @map("modified_at") @db.Timestamptz(6)
+  createdById String   @map("created_by") @db.Uuid
+
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  epic      Epic?     @relation(fields: [epicId], references: [id], onDelete: Restrict)
+  createdBy User      @relation(fields: [createdById], references: [id])
+  comments  Comment[]
+
+  @@index([teamId])
+  @@index([epicId])
+  @@map("tickets")
+}
+
+// ─── Comments (BR-K15) ──────────────────────────────────────────────────────
+// Immutable in mandatory scope: no modified timestamp.
+
+model Comment {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ticketId  String   @map("ticket_id") @db.Uuid
+  authorId  String   @map("author_id") @db.Uuid
+  body      String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id])
+
+  @@index([ticketId])
+  @@index([authorId])
+  @@map("comments")
+}
