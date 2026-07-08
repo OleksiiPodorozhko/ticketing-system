@@ -5,7 +5,7 @@ description: Plan the next implementation task for the ticketing system when the
 
 # task-plan
 
-**Purpose:** Turn the next item in `docs/implementation-plan.md` into a concrete, self-contained task contract in `docs/current-task.md`, so the implementing session can work from two files without re-deriving scope. This skill plans; it never writes application code. Implementation is handed off to `task-implement` (until migrated: `prompts/implement-current-task.md`).
+**Purpose:** Turn the next item in `docs/implementation-plan.md` into a concrete, self-contained task contract in `docs/current-task.md`, so the implementing session can work from two files without re-deriving scope. This skill plans; it never writes application code. Implementation is handed off to `task-implement`.
 
 ## Procedure
 
@@ -49,4 +49,4 @@ Overwrite `docs/current-task.md` with the drafted block, show the human the resu
 
 ## Out of scope for this skill
 
-Implementation (`task-implement`), self-check (`task-self-check`), QA review (`task-qa`), fixing findings (`task-fix`), and close-out/commit (`task-finish`). Until those skills are migrated, their behavior lives in the matching `prompts/*.md` templates.
+Implementation (`task-implement`), self-check (`task-self-check`), QA review (`task-qa`), fixing findings (`task-fix`), and close-out/commit (`task-finish`).

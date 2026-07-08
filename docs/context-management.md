@@ -1,10 +1,12 @@
 # Context Management
 
-What a Claude Code session reads at start, updates at end, and where each kind of information lives. Companion: [agentic-workflow.md](agentic-workflow.md) (the execution loop).
+What a Claude Code session reads at start, updates at end, and where each kind of information lives. At runtime this reading is done by the `task-*` Skills (`.claude/skills/`), which load documentation selectively — by section or by ID, only when the task requires it. This document is the human-readable map behind that behavior, not a runtime instruction set. Companion: [agentic-workflow.md](agentic-workflow.md) (the Skill pipeline).
 
 ---
 
 ## 1. What to read at session start
+
+Performed by `task-start` when a session begins. The principle: minimal context — orientation costs two files, everything else is pulled on demand.
 
 **Always (cheap, ~2 files):**
 
@@ -23,6 +25,8 @@ What a Claude Code session reads at start, updates at end, and where each kind o
 **Never at session start:** the whole `docs/` tree, the whole `docs/qa/` tree, or a full-repo scan "to get oriented". [current-task.md](current-task.md) exists precisely so orientation costs two files.
 
 ## 2. What to update at session end
+
+Performed by `task-finish` at close-out or when parking work.
 
 - **[current-task.md](current-task.md)** — always. Either: (a) task completed → overwrite with the next task's block, or (b) task in flight → append a short "Progress / resume here" note (what's done, what's left, any surprise found). Never leave it describing finished work with no pointer forward.
 - **[project-state.md](project-state.md)** — only when something changed at its altitude: a QA gate passed (§1 row + DoD scoreboard + §2 next action), a decision was made (§4), a blocker appeared/cleared (§5). Not for intra-task progress.
@@ -57,6 +61,8 @@ The chain: [implementation-plan.md](implementation-plan.md) says what all the ta
 
 ## 5. Session-start checklist
 
+Human reference — this is what `task-start` does:
+
 ```
 [ ] Read docs/current-task.md — is there an active task with a resume note?
 [ ] Read docs/project-state.md §1–2 — does it agree with current-task.md?
@@ -67,6 +73,8 @@ The chain: [implementation-plan.md](implementation-plan.md) says what all the ta
 ```
 
 ## 6. Session-end checklist
+
+Human reference — this is what `task-finish` does:
 
 ```
 [ ] Tests for touched behavior ran; output captured (or task explicitly parked).

@@ -47,10 +47,10 @@ When the code is written, run the task's **"Commands to run" verbatim** and show
 
 ### 6. Hand off — do not commit
 
-Continue with `task-self-check` (until migrated: `prompts/self-check.md`) before any QA involvement.
+Continue with `task-self-check` before any QA involvement.
 
-**Do not commit in this skill.** Commit happens only after self-check passes and the QA review required by the task's "QA gate expectation" is done (close-out: `task-finish`; until migrated: `prompts/session-end.md`).
+**Do not commit in this skill.** Commit happens only after self-check passes and the QA review required by the task's "QA gate expectation" is done (close-out: `task-finish`).
 
 ## Out of scope for this skill
 
-Task planning (`task-plan`), the self-check walkthrough (`task-self-check`), QA review procedure (`task-qa`), fixing QA findings (`task-fix`), and documentation updates / commit (`task-finish`). Until those skills are migrated, their behavior lives in the matching `prompts/*.md` templates.
+Task planning (`task-plan`), the self-check walkthrough (`task-self-check`), QA review procedure (`task-qa`), fixing QA findings (`task-fix`), and documentation updates / commit (`task-finish`).

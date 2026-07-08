@@ -34,7 +34,7 @@ Fixes live inside the current task's allowed files/areas. A finding that require
 
 ### 5. Re-review when behavior changed
 
-If any fix changed behavior (not just formatting or messages), **re-invoke qa-reviewer scoped to the fix diff** — use the task-scoped procedure from `task-qa` (until migrated: `prompts/qa-review.md`), with the findings addressed and the fix diff's changed files as the input. If the re-review returns new Critical/Major findings, loop back to step 1.
+If any fix changed behavior (not just formatting or messages), **re-invoke qa-reviewer scoped to the fix diff** — use the task-scoped procedure from `task-qa`, with the findings addressed and the fix diff's changed files as the input. If the re-review returns new Critical/Major findings, loop back to step 1.
 
 ## Output
 
@@ -44,8 +44,8 @@ If any fix changed behavior (not just formatting or messages), **re-invoke qa-re
 
 ## Hand-off — do not commit
 
-With a passing final verdict (`PASS` / `PASS WITH RISKS`), proceed to documentation update and commit via `task-finish` (until migrated: `prompts/session-end.md`). **Do not commit in this skill.**
+With a passing final verdict (`PASS` / `PASS WITH RISKS`), proceed to documentation update and commit via `task-finish`. **Do not commit in this skill.**
 
 ## Out of scope for this skill
 
-The QA review procedure itself (`task-qa`), documentation updates / next-task prep / commit (`task-finish`), and any new feature work beyond fixing the findings (`task-implement`). Until the remaining skills are migrated, their behavior lives in the matching `prompts/*.md` templates.
+The QA review procedure itself (`task-qa`), documentation updates / next-task prep / commit (`task-finish`), and any new feature work beyond fixing the findings (`task-implement`).

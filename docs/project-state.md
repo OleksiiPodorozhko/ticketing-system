@@ -25,7 +25,7 @@ Status values: `not started` · `in progress` · `gate pending` · `done (gate p
 
 ## 2. Next action
 
-Continue **Slice 0 — Walking skeleton** with **Task 0.2 — Prisma schema + initial migration**, as specified in [current-task.md](current-task.md). Task 0.1 (scaffolding) was committed as `510a9fb` outside the workflow and reconciled 2026-07-07: acceptance criteria verified retroactively (builds, `/api/health`, error contract, 8 route stubs, `.gitignore` pre-existing coverage) and a retroactive task-scoped qa-reviewer review returned **PASS** with two non-blocking watch-items (carried in [current-task.md](current-task.md)). Slice 0 finishes with 0.3 compose stack + harness, ending in QA gate 0. Execute per [agentic-workflow.md](agentic-workflow.md) using the templates in `prompts/`.
+Continue **Slice 0 — Walking skeleton** with **Task 0.2 — Prisma schema + initial migration**, as specified in [current-task.md](current-task.md). Task 0.1 (scaffolding) was committed as `510a9fb` outside the workflow and reconciled 2026-07-07: acceptance criteria verified retroactively (builds, `/api/health`, error contract, 8 route stubs, `.gitignore` pre-existing coverage) and a retroactive task-scoped qa-reviewer review returned **PASS** with two non-blocking watch-items (carried in [current-task.md](current-task.md)). Slice 0 finishes with 0.3 compose stack + harness, ending in QA gate 0. Execute via `/task-start` per [agentic-workflow.md](agentic-workflow.md).
 
 ## 3. What exists today
 

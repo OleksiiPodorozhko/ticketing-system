@@ -1,23 +1,29 @@
 # Agentic Workflow
 
-How Claude Code sessions execute this project. Companion docs: [context-management.md](context-management.md) (what to read/update when) · [implementation-plan.md](implementation-plan.md) (the task list) · [current-task.md](current-task.md) (the active task) · prompt templates in `prompts/`.
+How Claude Code sessions execute this project. The executable procedures live in the Skills under `.claude/skills/`; this document is the human-oriented overview. Companion docs: [context-management.md](context-management.md) (what to read/update when) · [implementation-plan.md](implementation-plan.md) (the task list) · [current-task.md](current-task.md) (the active task).
 
 ---
 
-## The loop
+## Where things live
 
-Every unit of work follows the same cycle. One task ([implementation-plan.md](implementation-plan.md) numbering) per cycle; never two tasks in flight.
+- **`.claude/skills/`** — executable workflow procedures (the `task-*` pipeline below).
+- **`docs/`** — project knowledge and project state; Skills read it selectively.
+- **`.claude/hooks/`** — deterministic guardrails, enforced regardless of what a session decides.
+- **`.claude/agents/`** — specialized read-only assistance (`qa-reviewer`, `implementation-planner`).
 
-1. **Session start** — run the [context-management.md](context-management.md) session-start checklist (template: `prompts/session-start.md`). Confirm what [current-task.md](current-task.md) says before touching anything.
-2. **Task planning** — if [current-task.md](current-task.md) is stale or empty, plan the next task (template: `prompts/plan-next-task.md`). Optionally invoke the `implementation-planner` subagent; either way, the result is written into [current-task.md](current-task.md) before implementation starts.
-3. **Implementation** — execute exactly the scope in [current-task.md](current-task.md) (template: `prompts/implement-current-task.md`). Scope drift = stop, update the task doc or split a new task; don't improvise extra scope.
-4. **Self-check** — before any QA involvement: walk the acceptance criteria one by one, run the smallest relevant test set, spot-check touched invariants (template: `prompts/self-check.md`). Fix what you find yourself — qa-reviewer is not a linter.
-5. **QA review** — invoke `@qa-reviewer` per the rules below (template: `prompts/qa-review.md`).
-6. **Fixes** — address Critical/Major findings, re-run affected tests, re-review if behavior changed (template: `prompts/fix-qa-findings.md`).
-7. **Documentation update** — [current-task.md](current-task.md) rewritten for the next task; [project-state.md](project-state.md) at gates/decisions; [qa/qa-review-log.md](qa/qa-review-log.md) at full gates.
-8. **Commit** — with test output in hand. Message states the task number and what it delivers. Never claim completion without command output.
+## The pipeline
 
-Session end (any time, even mid-task): run the session-end checklist (template: `prompts/session-end.md`) so the next session can resume cold.
+Every unit of work follows the same Skill pipeline. One task ([implementation-plan.md](implementation-plan.md) numbering) per cycle; never two tasks in flight. `/task-start` is the one command a human normally runs — it classifies where the pipeline stands and routes to the right stage.
+
+1. **`/task-start`** — gathers minimal evidence ([current-task.md](current-task.md), [project-state.md](project-state.md) §1–2, git state), classifies the workflow state, enforces human approval gates, and hands off to the stage below.
+2. **`task-plan`** — if [current-task.md](current-task.md) is stale or empty, selects the next task block from the active slice and overwrites [current-task.md](current-task.md) with the task contract. May invoke the `implementation-planner` subagent on plan drift.
+3. **`task-implement`** — executes exactly the scope in [current-task.md](current-task.md). Scope drift = stop, propose an amendment or follow-up task; don't improvise extra scope.
+4. **`task-self-check`** — before any QA involvement: walks the acceptance criteria one by one, runs the smallest relevant test set, spot-checks touched invariants. Fixes self-found issues — qa-reviewer is not a linter.
+5. **`task-qa`** — invokes `@qa-reviewer` per the rules below; its verdict gates the commit (`FAIL`/`BLOCKED` stops the line).
+6. **`task-fix`** (if needed) — addresses Critical/Major findings root-cause-first, re-runs affected tests, re-reviews if behavior changed.
+7. **`task-finish`** — updates [current-task.md](current-task.md) for the next task, [project-state.md](project-state.md) at gates/decisions, [qa/qa-review-log.md](qa/qa-review-log.md) at full gates; then commits with the task number (the only skill that commits) — and the cycle restarts at `/task-start` for the next task.
+
+Session end (any time, even mid-task): `task-finish` also handles parking — a "Progress / resume here" note in [current-task.md](current-task.md) so the next session can resume cold.
 
 ## Roles
 

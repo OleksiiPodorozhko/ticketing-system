@@ -57,8 +57,8 @@ Fix self-found issues yourself, re-run the affected checks, and show the final s
 
 ## Hand-off — do not commit
 
-If everything passes, continue per the task's **"QA gate expectation"** to `task-qa` (until migrated: `prompts/qa-review.md`). **Do not commit in this skill** — commit happens only after the required QA review, at close-out (`task-finish`; until migrated: `prompts/session-end.md`).
+If everything passes, continue per the task's **"QA gate expectation"** to `task-qa`. **Do not commit in this skill** — commit happens only after the required QA review, at close-out (`task-finish`).
 
 ## Out of scope for this skill
 
-QA review procedure (`task-qa`), fixing QA findings (`task-fix`), documentation updates and commit (`task-finish`), and any new implementation beyond fixing self-found in-scope issues (`task-implement`). Until those skills are migrated, their behavior lives in the matching `prompts/*.md` templates.
+QA review procedure (`task-qa`), fixing QA findings (`task-fix`), documentation updates and commit (`task-finish`), and any new implementation beyond fixing self-found in-scope issues (`task-implement`).

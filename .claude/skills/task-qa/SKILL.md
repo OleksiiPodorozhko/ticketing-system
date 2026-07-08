@@ -56,8 +56,8 @@ Follow the "QA gate protocol" in `docs/implementation-plan.md`, before the slice
 
 Report the verdict to the human, then:
 
-- **`FAIL` / `BLOCKED`** — stops the line. Nothing gets committed. Continue with `task-fix` (until migrated: `prompts/fix-qa-findings.md`).
-- **`PASS` / `PASS WITH RISKS`** — proceed to documentation update and commit via `task-finish` (until migrated: `prompts/session-end.md`).
+- **`FAIL` / `BLOCKED`** — stops the line. Nothing gets committed. Continue with `task-fix`.
+- **`PASS` / `PASS WITH RISKS`** — proceed to documentation update and commit via `task-finish`.
 
 Severity convention (docs/qa/test-strategy.md): **Critical** = a DoD item fails or data is lost/corrupted · **Major** = BR-rule violation with no workaround · **Minor** = BR-rule violation with workaround, or degraded UX · **Cosmetic** = presentation only. Critical/Major findings must be addressed before commit.
 
@@ -65,4 +65,4 @@ Severity convention (docs/qa/test-strategy.md): **Critical** = a DoD item fails 
 
 ## Out of scope for this skill
 
-Fixing findings (`task-fix`), documentation updates beyond the full-gate log/state entries in §4, next-task preparation, and the commit itself (`task-finish`). qa-reviewer writes no production or test code — fixes are the main session's job. Until the remaining skills are migrated, their behavior lives in the matching `prompts/*.md` templates.
+Fixing findings (`task-fix`), documentation updates beyond the full-gate log/state entries in §4, next-task preparation, and the commit itself (`task-finish`). qa-reviewer writes no production or test code — fixes are the main session's job.

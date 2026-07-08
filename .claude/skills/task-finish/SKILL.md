@@ -16,11 +16,11 @@ Confirm, with evidence in hand:
 - **tests for touched behavior ran this session** (output captured), and
 - **the QA review required by the task's "QA gate expectation" happened**, if implementation work is being committed.
 
-If either is missing: do it now (`task-self-check` / `task-qa`; until migrated: `prompts/self-check.md` / `prompts/qa-review.md`) — or explicitly park the work (step 6).
+If either is missing: do it now (`task-self-check` / `task-qa`) — or explicitly park the work (step 6).
 
 ### 2. Update `docs/current-task.md` — always
 
-- **Task complete** → overwrite the file with the next task's block (plan it via `task-plan`; until migrated: `prompts/plan-next-task.md`).
+- **Task complete** → overwrite the file with the next task's block (plan it via `task-plan`).
 - **Task in flight** → append a **"Progress / resume here"** note: what's done, what's left, any surprises found.
 
 Never leave the file describing finished work with no pointer forward.
@@ -60,4 +60,4 @@ Give the human a **3–5 sentence summary**: what was done, the evidence (test o
 
 ## Out of scope for this skill
 
-Planning the next task's content (`task-plan` — step 2 only triggers it), implementation (`task-implement`), the self-check walkthrough (`task-self-check`), the QA review procedure (`task-qa`), and fixing findings (`task-fix`). Until any remaining skill is migrated, its behavior lives in the matching `prompts/*.md` template.
+Planning the next task's content (`task-plan` — step 2 only triggers it), implementation (`task-implement`), the self-check walkthrough (`task-self-check`), the QA review procedure (`task-qa`), and fixing findings (`task-fix`).

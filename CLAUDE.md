@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `requirements/Hackathon_Ticketing_System_Requirements_v3.pdf` — the authoritative spec.
 - `requirements/wireframes/*.png` — 5 low-fidelity wireframes (reference only; layout is not prescriptive as long as all mandatory actions/states remain usable).
 - `docs/` — project knowledge and state (architecture, plans, current task, QA docs). Read files selectively based on the active task; do not load the whole tree every session.
-- Implementation work should normally start through `/task-start` once the Skills migration (see `docs/claude-code-upgrade-plan.md`) is complete.
-- `prompts/` is legacy until migrated into `.claude/skills/` — do not treat it as the active workflow.
+- Start implementation sessions with `/task-start` — it orients on the current task/project state, routes to the right `task-*` skill, and enforces the approval gates.
+- `prompts/` holds legacy prompt templates kept for historical reference (see `prompts/README.md`); the active workflow lives in `.claude/skills/`.
 
 ## What to build
 
