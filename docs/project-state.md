@@ -2,7 +2,7 @@
 
 **Living document — update at every QA gate and whenever a decision changes.** One glance answers: where are we, what's decided, what's next, what's blocked.
 
-Last updated: **2026-07-07** · Phase: **Implementation — Slice 0 in progress (Task 0.1 done, reconciled)**
+Last updated: **2026-07-08** · Phase: **Implementation — Slice 0 in progress (Tasks 0.1–0.2 done)**
 
 ---
 
@@ -10,7 +10,7 @@ Last updated: **2026-07-07** · Phase: **Implementation — Slice 0 in progress 
 
 | Slice ([implementation-plan.md](implementation-plan.md)) | Status | QA gate | Commit |
 |---|---|---|---|
-| 0 — Walking skeleton | in progress (task 0.1 of 3 done) | — | 510a9fb (task 0.1) |
+| 0 — Walking skeleton | in progress (tasks 0.1–0.2 of 3 done) | — | 510a9fb (0.1) · 6b95b71 (0.2) |
 | 1 — Auth & email verification | not started | — | — |
 | 2 — Teams | not started | — | — |
 | 3 — Epics | not started | — | — |
@@ -25,7 +25,7 @@ Status values: `not started` · `in progress` · `gate pending` · `done (gate p
 
 ## 2. Next action
 
-Continue **Slice 0 — Walking skeleton** with **Task 0.2 — Prisma schema + initial migration**, as specified in [current-task.md](current-task.md). Task 0.1 (scaffolding) was committed as `510a9fb` outside the workflow and reconciled 2026-07-07: acceptance criteria verified retroactively (builds, `/api/health`, error contract, 8 route stubs, `.gitignore` pre-existing coverage) and a retroactive task-scoped qa-reviewer review returned **PASS** with two non-blocking watch-items (carried in [current-task.md](current-task.md)). Slice 0 finishes with 0.3 compose stack + harness, ending in QA gate 0. Execute via `/task-start` per [agentic-workflow.md](agentic-workflow.md).
+Finish **Slice 0 — Walking skeleton** with **Task 0.3 — Compose stack + test harness + clean-checkout proof**, as specified in [current-task.md](current-task.md); it closes with **QA gate 0**. Task 0.2 (Prisma schema + initial migration, all six tables) was committed as `6b95b71` on 2026-07-08 through the full pipeline: self-check 5/5 PASS, task-scoped qa-reviewer verdict **PASS** (live-verified against a fresh scratch Postgres; entry in [qa/qa-review-log.md](qa/qa-review-log.md)), with three non-blocking findings carried as watch-items in [current-task.md](current-task.md). Before the slice-0 gate closes, record the DoD-7/DoD-8 dev-password carve-out sign-off (§5). Execute via `/task-start` per [agentic-workflow.md](agentic-workflow.md).
 
 ## 3. What exists today
 
@@ -56,6 +56,7 @@ Newest last. Full rationale lives in [architecture.md](architecture.md); this is
 | 2026-07-07 | Q5 security posture: duplicate sign-up returns an explicit 409 — account-enumeration disclosure knowingly accepted for this hackathon tool (distinct from the BR-T07 all-data-visible rule; deliberate, challengeable choice) | [architecture.md](architecture.md) §6 |
 | 2026-07-07 | DB password: `${POSTGRES_PASSWORD:-dev default}` in compose, declared bounded exception to literal BR-A15/DoD-8 wording (see §5) | [architecture.md](architecture.md) §2 |
 | 2026-07-07 | Execution model: slices broken into 30–90 min tasks (33 total); two-level QA gating — task-scoped qa-reviewer review at every task commit, full QA gate at each slice-closing task; docs-only commits exempt; active task tracked in [current-task.md](current-task.md) | [implementation-plan.md](implementation-plan.md) · [agentic-workflow.md](agentic-workflow.md) |
+| 2026-07-08 | Prisma pinned to **v6** (6.19.3), not v7: v7 requires `prisma.config.ts` at the backend root + runtime driver-adapter packages — heavier and outside task 0.2's file boundary; v6 matches the documented classic workflow. Reversible; QA-adjudicated (accepted) in [qa/qa-review-log.md](qa/qa-review-log.md). Schema hardening: `users_email_normalized_check` DB backstop accepted alongside API-boundary normalization | [qa/qa-review-log.md](qa/qa-review-log.md) · commit 6b95b71 |
 
 ## 5. Open questions & blockers
 
