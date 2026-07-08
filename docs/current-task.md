@@ -6,64 +6,61 @@
 
 ## Current slice
 
-**Slice 0 — Walking skeleton** (4 h budget, 3 tasks) — [implementation-plan.md](implementation-plan.md)
+**Slice 1 — Auth & email verification** (10 h budget, 9 tasks) — [implementation-plan.md](implementation-plan.md). The critical path (R1): every other DoD item sits behind a verified login.
 
 ## Current task
 
-**Task 0.3 — Compose stack + test harness + clean-checkout proof** (~90 min) — status: **not started**
+**Task 1.1 — Signup endpoint** (~60 min) — status: **not started**
 
 ## Goal
 
-`docker compose up --build` brings up the whole stack from a clean checkout; the test harness runs one trivial API test against the compose DB. Slice-closing task — ends in **full QA gate 0**. Architecture reference: [architecture.md](architecture.md) §2 (topology) and §7 (testing).
+`POST /api/auth/signup` creates a user with a properly hashed password and normalized email. No mail yet (mailer is Task 1.2). Architecture reference: [architecture.md](architecture.md) §5 (API surface, error contract) and §6 (Q5 duplicate-signup decision).
 
 ## Allowed files/areas
 
-- Repo root: `docker-compose.yml`, `Dockerfile` (multi-stage per [architecture.md](architecture.md) §2), `.env.example`.
-- `backend/test/` (new): `health.test.ts`; `backend/vitest.config.ts`.
-- `backend/package.json`: test scripts + test devDependencies (vitest, supertest) only.
-- Minor backend startup wiring only as needed to run `prisma migrate deploy` on boot (per [architecture.md](architecture.md) §2 — migrations run on app start).
+- `backend/src/routes/auth.ts` (new), `backend/src/lib/password.ts` (new), related types.
+- `backend/src/server.ts`: route registration only.
+- `backend/test/auth-signup.test.ts` (new) — minimal smoke test.
+- `backend/package.json`: `argon2` dependency (+ types if needed) only.
 
 ## Forbidden changes
 
-- No auth logic, no business endpoints, no Prisma client repositories/queries beyond what boot-time `migrate deploy` wiring strictly needs.
-- No schema/migration edits (`backend/prisma/` is done — task 0.2, commit 6b95b71); a real gap found here is scope drift → stop and ask.
-- No seed data in any startup path (BR-P09/P10).
-- No secrets in the repo: DB password only via the declared bounded exception `${POSTGRES_PASSWORD:-…}` (dev-only label); SMTP secrets stay out of source (`.env.example` documents names, not values).
-- No edits to `requirements/`, `docs/qa/` (except what the full gate itself requires), `CLAUDE.md`, `frontend/` app code.
-- Stack fixed per [architecture.md](architecture.md) §1; Prisma stays at **v6.19.3** (classic `DATABASE_URL` workflow — pinned decision, [project-state.md](project-state.md) §4 2026-07-08).
+- No schema/migration edits (`backend/prisma/` is done); a real gap found here is scope drift → stop and ask.
+- No mailer/token/verification/login logic (Tasks 1.2–1.4).
+- No frontend changes.
+- No seed data; no secrets in the repo.
+- Stack fixed per [architecture.md](architecture.md) §1; Prisma stays at **v6.19.3**.
 
 ## Acceptance criteria
 
-1. `docker compose down -v && docker compose up --build` → app on **:8080** (SPA shell + `/api/health`), Mailpit UI on **:8025**, healthchecks green, `depends_on` ordering respected (BR-O01…O03).
-2. Fresh DB contains schema + migration metadata only — zero application rows (BR-P09/P10, DoD-9).
-3. One vitest + supertest test (`backend/test/health.test.ts`) passes against the running stack's API.
-4. DB password follows the declared bounded exception (`${POSTGRES_PASSWORD:-…}` labeled dev-only); no other secrets in the repo.
-5. `.env.example` documents the `relay1.dataart.com` SMTP override.
+1. Email trimmed + lowercased before storage/comparison; simple pattern check (BR-A02, Q1/Q2).
+2. Password ≥8 and ≤200 chars, hashed with argon2 — never stored or logged in plaintext (BR-A04).
+3. Duplicate email → 409 `{error:{code,message}}` (Q5 decision).
+4. Success → 201; user starts unverified.
 
 ## Commands to run
 
 ```
-docker compose down -v && docker compose up --build
-cd backend && npm test
+cd backend && npx vitest run test/auth-signup.test.ts
 ```
 
 ## QA gate expectation
 
-**Full QA gate 0** (slice-closing — protocol in [implementation-plan.md](implementation-plan.md) "QA gate protocol"): run CHK-OPS-01/02/03/10 against the compose stack and include the evidence; invoke qa-reviewer with the slice goal, changed files, and BR-O01…O03 / BR-P09/P10 claims; **record the DB-password carve-out sign-off** (DoD-7/8 bounded exception) in [qa/qa-review-log.md](qa/qa-review-log.md) with carve-out notes on CHK-AUTH-19 / CHK-OPS-04 — must land before this gate closes ([project-state.md](project-state.md) §5); then update [project-state.md](project-state.md) §1/§2 and the qa-review-log.
+Task-scoped qa-reviewer review before commit (auth handling → review mandatory per [agentic-workflow.md](agentic-workflow.md)).
 
 ## Carried-over watch-items
 
-From Task 0.1 (retroactive QA review, 2026-07-07, PASS):
+**Active in this task:**
 
-- `error-mapper.ts` falls back to `err.code ?? 'BAD_REQUEST'` for 4xx — once real Fastify schema validation lands (first validated endpoint, slice 1), re-check BR-P04 so Fastify-internal codes don't leak into the contract.
-- Committed automated test for `/api/health` / error contract lands **in this task** (`backend/test/health.test.ts`) — don't let it slip.
+- From Task 0.1 (QA 2026-07-07): `error-mapper.ts` falls back to `err.code ?? 'BAD_REQUEST'` for 4xx — **this is the first validated endpoint**: re-check BR-P04 so Fastify-internal validation codes don't leak into the contract.
+- From Task 0.2 (QA 2026-07-08): the signup handler must map `users_email_normalized_check` and `users_email_key` violations to the standard BR-P04 `{error:{code,message}}` / 409 contract — never a raw 500.
 
-From Task 0.2 (QA review 2026-07-08, PASS — entries in [qa/qa-review-log.md](qa/qa-review-log.md)):
+**Carried forward (not this task):**
 
-- The future signup handler (task 1.1) must map `users_email_normalized_check` and `users_email_key` violations to the standard BR-P04 `{error:{code,message}}` / 409 contract — never a raw 500.
-- BR-K15 is only half-covered by the DB cascade; CHK-TKT-13/14 (delete confirmation UI) stay uncovered until the ticket UI lands.
-- Optional docs-only addendum to [architecture.md](architecture.md) §4: note the three Prisma-default RESTRICT FKs (`email_verification_tokens.user_id`, `tickets.created_by`, `comments.author_id`) as intentional.
+- BR-K15 delete-confirmation UI (CHK-TKT-13/14) — waits for the ticket UI.
+- Optional docs-only addendum to [architecture.md](architecture.md) §4: three Prisma-default RESTRICT FKs are intentional.
+- From QA gate 0 (2026-07-08): `README.md` still a bare title (BR-O07/CHK-OPS-06) — must land before any demo-readiness claim; CHK-OPS-01 run on Windows only, macOS/Linux clean-machine run open (R2).
 
 ## Next step after completion
 
-Slice 0 done. Overwrite this file with **Task 1.1 — Signup endpoint** (block in [implementation-plan.md](implementation-plan.md), Slice 1), then proceed per [agentic-workflow.md](agentic-workflow.md).
+Overwrite this file with **Task 1.2 — Mailer + verification-token issue & send** (block in [implementation-plan.md](implementation-plan.md), Slice 1), then proceed per [agentic-workflow.md](agentic-workflow.md).

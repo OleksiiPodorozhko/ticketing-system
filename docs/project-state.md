@@ -2,7 +2,7 @@
 
 **Living document — update at every QA gate and whenever a decision changes.** One glance answers: where are we, what's decided, what's next, what's blocked.
 
-Last updated: **2026-07-08** · Phase: **Implementation — Slice 0 in progress (Tasks 0.1–0.2 done)**
+Last updated: **2026-07-08** · Phase: **Implementation — Slice 0 done (gate 0 passed), Slice 1 next**
 
 ---
 
@@ -10,7 +10,7 @@ Last updated: **2026-07-08** · Phase: **Implementation — Slice 0 in progress 
 
 | Slice ([implementation-plan.md](implementation-plan.md)) | Status | QA gate | Commit |
 |---|---|---|---|
-| 0 — Walking skeleton | in progress (tasks 0.1–0.2 of 3 done) | — | 510a9fb (0.1) · 6b95b71 (0.2) |
+| 0 — Walking skeleton | done (gate passed 2026-07-08) | QA gate 0: PASS WITH RISKS ([qa-review-log](qa/qa-review-log.md)) | 510a9fb (0.1) · 6b95b71 (0.2) · 0.3 pending commit |
 | 1 — Auth & email verification | not started | — | — |
 | 2 — Teams | not started | — | — |
 | 3 — Epics | not started | — | — |
@@ -21,11 +21,11 @@ Last updated: **2026-07-08** · Phase: **Implementation — Slice 0 in progress 
 
 Status values: `not started` · `in progress` · `gate pending` · `done (gate passed <date>)` · `descoped`.
 
-**DoD scoreboard:** 0 / 10 demonstrable. **BR-O08 test slots:** 0 / 2 filled (planned: slices 1–5).
+**DoD scoreboard:** 3 / 10 demonstrable (DoD-7 compose startup, DoD-8 no-secrets with the signed-off carve-out, DoD-9 fresh DB empty). **BR-O08 test slots:** 0 / 2 filled (planned: slices 1–5; the gate-0 health/static tests are harness proof, not business flows).
 
 ## 2. Next action
 
-Finish **Slice 0 — Walking skeleton** with **Task 0.3 — Compose stack + test harness + clean-checkout proof**, as specified in [current-task.md](current-task.md); it closes with **QA gate 0**. Task 0.2 (Prisma schema + initial migration, all six tables) was committed as `6b95b71` on 2026-07-08 through the full pipeline: self-check 5/5 PASS, task-scoped qa-reviewer verdict **PASS** (live-verified against a fresh scratch Postgres; entry in [qa/qa-review-log.md](qa/qa-review-log.md)), with three non-blocking findings carried as watch-items in [current-task.md](current-task.md). Before the slice-0 gate closes, record the DoD-7/DoD-8 dev-password carve-out sign-off (§5). Execute via `/task-start` per [agentic-workflow.md](agentic-workflow.md).
+Commit Task 0.3 (compose stack + test harness — work complete and gate-passed on 2026-07-08, held uncommitted at the human's stop-before-commit instruction), then start **Slice 1 — Auth & email verification** with **Task 1.1 — Signup endpoint**, as specified in [current-task.md](current-task.md). Task 0.3 went through the full pipeline: self-check 5/5 PASS, **full QA gate 0 PASS WITH RISKS** with all findings resolved same-day and the DoD-7/8 DB-password carve-out signed off (entries in [qa/qa-review-log.md](qa/qa-review-log.md), evidence in [qa/runs/2026-07-08-run1.md](qa/runs/2026-07-08-run1.md)). Execute via `/task-start` per [agentic-workflow.md](agentic-workflow.md).
 
 ## 3. What exists today
 
@@ -56,13 +56,14 @@ Newest last. Full rationale lives in [architecture.md](architecture.md); this is
 | 2026-07-07 | Q5 security posture: duplicate sign-up returns an explicit 409 — account-enumeration disclosure knowingly accepted for this hackathon tool (distinct from the BR-T07 all-data-visible rule; deliberate, challengeable choice) | [architecture.md](architecture.md) §6 |
 | 2026-07-07 | DB password: `${POSTGRES_PASSWORD:-dev default}` in compose, declared bounded exception to literal BR-A15/DoD-8 wording (see §5) | [architecture.md](architecture.md) §2 |
 | 2026-07-07 | Execution model: slices broken into 30–90 min tasks (33 total); two-level QA gating — task-scoped qa-reviewer review at every task commit, full QA gate at each slice-closing task; docs-only commits exempt; active task tracked in [current-task.md](current-task.md) | [implementation-plan.md](implementation-plan.md) · [agentic-workflow.md](agentic-workflow.md) |
+| 2026-07-08 | Task 0.3 scope deviation approved (human, with the Implementation Plan pre-edit): `@fastify/static` added as a production dependency + env-gated SPA-serving block in `backend/src/server.ts` (`STATIC_DIR`; unknown `/api/*` keeps the JSON 404 contract via `callNotFound`). Necessary to satisfy AC-1 (SPA shell on :8080) per the §2 topology; migrate-deploy wiring stayed in the Dockerfile CMD | [qa/qa-review-log.md](qa/qa-review-log.md) 2026-07-08 gate-0 entry |
 | 2026-07-08 | Prisma pinned to **v6** (6.19.3), not v7: v7 requires `prisma.config.ts` at the backend root + runtime driver-adapter packages — heavier and outside task 0.2's file boundary; v6 matches the documented classic workflow. Reversible; QA-adjudicated (accepted) in [qa/qa-review-log.md](qa/qa-review-log.md). Schema hardening: `users_email_normalized_check` DB backstop accepted alongside API-boundary normalization | [qa/qa-review-log.md](qa/qa-review-log.md) · commit 6b95b71 |
 
 ## 5. Open questions & blockers
 
 - **No hard blockers.** Q8 (QA mail path) was the only blocking item; the Mailpit-default + env-override design unblocks development and local QA. **Still owed to the requirements owner:** confirm how evaluation-day QA runs mail (relay VPN access?) — affects demo prep only, not build order.
 - All other Q-items carry working decisions ([architecture.md](architecture.md) §6) mirroring the interim stances in [qa/test-strategy.md](qa/test-strategy.md) §6. If an owner answer contradicts a decision, update architecture.md §6, this log, and the affected `[blocked: Qnn]` checklist items.
-- **DoD-7 vs DoD-8 tension — dev-only Postgres default password in compose** ([architecture.md](architecture.md) §2): declared bounded exception; needs sign-off recorded in [qa/qa-review-log.md](qa/qa-review-log.md) and a carve-out note on CHK-AUTH-19 / CHK-OPS-04 **before the slice-0 gate closes**, else the slice-7 secrets sweep false-positives (2026-07-07 planning QA review, critical-attention finding).
+- **DoD-7 vs DoD-8 tension — dev-only Postgres default password in compose** ([architecture.md](architecture.md) §2): **closed 2026-07-08** — qa-reviewer sign-off recorded in the gate-0 entry of [qa/qa-review-log.md](qa/qa-review-log.md), with carve-out notes on CHK-AUTH-19 / CHK-OPS-04 in [qa/runs/2026-07-08-run1.md](qa/runs/2026-07-08-run1.md). The sign-off covers exactly `${POSTGRES_PASSWORD:-dev-only-not-a-secret}` in compose; any widening reopens BR-A15 review (slice-7 secrets sweep must honor this carve-out, nothing more).
 - Pending from the baseline QA review: direct PDF spot-check against derived docs once PDF tooling is available (finding 1, [qa/qa-review-log.md](qa/qa-review-log.md)).
 
 **QA-doc follow-ups from the 2026-07-07 planning review** (to apply at the slice where the behavior lands):
